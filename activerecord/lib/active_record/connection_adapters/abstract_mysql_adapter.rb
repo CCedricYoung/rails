@@ -84,7 +84,7 @@ module ActiveRecord
         end
 
         def blob_or_text_column?
-          sql_type =~ /blob/i || type == :text
+          sql_type =~ /blob/i || type == :text #|| type == :json
         end
 
         def case_sensitive?
@@ -560,6 +560,7 @@ module ActiveRecord
         case type.to_s
         when 'binary'
           case limit
+          when -1;                 "json"
           when 0..0xfff;           "varbinary(#{limit})"
           when nil;                "blob"
           when 0x1000..0xffffffff; "blob(#{limit})"
@@ -658,6 +659,7 @@ module ActiveRecord
         m.register_type %r(longblob)i,   Type::Binary.new(limit: 2**32 - 1)
         m.register_type %r(^float)i,     Type::Float.new(limit: 24)
         m.register_type %r(^double)i,    Type::Float.new(limit: 53)
+        m.register_type %r(json)i,       Type::Binary.new(limit: -1)
 
         register_integer_type m, %r(^bigint)i,    limit: 8
         register_integer_type m, %r(^int)i,       limit: 4
